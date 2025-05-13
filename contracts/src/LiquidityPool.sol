@@ -2,22 +2,18 @@
 pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-
 contract LPToken is ERC20 {
     address public pool;
     error NotPool();
-
     constructor(address _pool) ERC20("LPToken", "LPT") {
         pool = _pool;
     }
-
     function mint(uint256 amount, address to) external {
         if (msg.sender != pool) {
             revert NotPool();
         }
         _mint(to, amount);
     }
-
     function burn(uint256 amount, address to) external {
         if (msg.sender != pool) {
             revert NotPool();
@@ -25,7 +21,6 @@ contract LPToken is ERC20 {
         _burn(to, amount);
     }
 }
-
 // 100 a then 3 of them are going to fees
 contract LiquidityPool {
     IERC20 public tokenA;
@@ -91,7 +86,6 @@ contract LiquidityPool {
         emit ReservesUpdated(reserveA, reserveB);
         emit LPTokenMinted(msg.sender, liquidity);
     }
-
     function removeLiquidity(uint256 liquidity) external {
         if (liquidity == 0) {
             revert InsufficientLiquidity();
@@ -107,7 +101,6 @@ contract LiquidityPool {
         emit ReservesUpdated(reserveA, reserveB);
         emit LPTokenBurned(msg.sender, liquidity);
     }
-
     function swapAforB(uint256 amountA) external {
         if (amountA == 0) {
             revert AmountCannotBeZero();
@@ -123,7 +116,6 @@ contract LiquidityPool {
         emit SwappedAforB(msg.sender, amountA, amountB);
         emit ReservesUpdated(reserveA, reserveB);
     }
-
     // Swap Token B for Token A (with fee)
     function swapBforA(uint256 amountB) external {
         if (amountB == 0) {
@@ -141,7 +133,6 @@ contract LiquidityPool {
         emit SwappedBforA(msg.sender, amountB, amountA);
         emit ReservesUpdated(reserveA, reserveB);
     }
-
     function getLPTokenBalance(address user) external view returns (uint256) {
         return lpToken.balanceOf(user);
     }
@@ -165,7 +156,6 @@ contract LiquidityPool {
         uint256 amountBWithFee = (amountB * FEE) / 1000;
         return (amountBWithFee * reserveA) / reserveB;
     }
-
     function sqrt(uint y) internal pure returns (uint z) {
         if (y > 3) {
             z = y;
@@ -178,7 +168,6 @@ contract LiquidityPool {
             z = 1;
         }
     }
-
     function min(uint256 x, uint256 y) internal pure returns (uint256) {
         return x < y ? x : y;
     }
